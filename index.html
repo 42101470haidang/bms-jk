@@ -390,6 +390,12 @@
                 grid-template-columns: 1fr;
             }
         }
+        /* Tabs */
+        .nav-tabs { display:flex; gap:10px; margin: 0 20px 10px; }
+        .tab-btn { padding:10px 16px; border:none; border-radius:20px; cursor:pointer; background:#eef1f7; color:#333; font-weight:600; }
+        .tab-btn.active { background:#667eea; color:#fff; }
+        .tab-content { display:none; }
+        .tab-content.active { display:block; }
     </style>
 </head>
 <body>
@@ -408,6 +414,11 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="showTab('monitor')">Thông số pin</button>
+                <button class="tab-btn" onclick="showTab('control')">Điều khiển</button>
+            </div>
+            <div id="monitor-tab" class="tab-content active">
             <!-- Connection Status -->
             <div class="connection-status">
                 <h3>
@@ -542,6 +553,37 @@
                     </div>
                 </div>
             </div>
+            </div> <!-- end monitor-tab -->
+
+            <div id="control-tab" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>🎛️ Điều khiển ESP32</h3>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                            <button class="btn btn-danger" onclick="publishCommand(selectedDeviceId,'emergency_stop')">🛑 Dừng khẩn cấp</button>
+                            <button class="btn btn-warning" onclick="publishCommand(selectedDeviceId,'restart')">🔄 Khởi động lại</button>
+                            <button class="btn btn-success" onclick="publishCommand(selectedDeviceId,'get_status')">📊 Lấy trạng thái</button>
+                            <button class="btn" onclick="publishCommand(selectedDeviceId,'get_data')">📈 Lấy dữ liệu</button>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>⏱️ Tốc độ cập nhật</h3>
+                        <div style="display:flex;gap:10px;align-items:center;">
+                            <label>Chu kỳ:</label>
+                            <select id="refresh-select" onchange="setRefreshMs(this.value)">
+                                <option value="500">500 ms</option>
+                                <option value="1000">1000 ms</option>
+                                <option value="2000">2000 ms</option>
+                                <option value="3000" selected>3000 ms</option>
+                                <option value="5000">5000 ms</option>
+                            </select>
+                            <span id="refresh-label" style="color:#666"></span>
+                            <button class="btn" onclick="toggleAutoRefresh()">Bật/Tắt tự động</button>
+                            <button class="btn btn-primary" onclick="loadDataNow()">Làm mới</button>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end control-tab -->
         </div>
     </div>
 
@@ -559,6 +601,42 @@
         let selectedDeviceId = null; // ID của thiết bị được chọn
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
+
+        // Monitor/control refresh (UI only; data push qua MQTT)
+        let autoRefresh = true;
+        let refreshMs = 3000;
+        let refreshTimer = null;
+
+        function setRefreshMs(val){
+            refreshMs = parseInt(val,10) || 3000;
+            const lbl=document.getElementById('refresh-label');
+            if(lbl) lbl.textContent = `Đang cập nhật mỗi ${refreshMs} ms`;
+            if (autoRefresh){
+                if (refreshTimer){ clearInterval(refreshTimer); }
+                refreshTimer = setInterval(()=>{/* UI refresh hook if needed */}, refreshMs);
+            }
+        }
+
+        function toggleAutoRefresh(){
+            autoRefresh = !autoRefresh;
+            if (autoRefresh){
+                if (refreshTimer){ clearInterval(refreshTimer); }
+                refreshTimer = setInterval(()=>{/* UI refresh hook if needed */}, refreshMs);
+            } else if (refreshTimer){
+                clearInterval(refreshTimer); refreshTimer=null;
+            }
+        }
+
+        function showTab(tab){
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(t=>t.classList.remove('active'));
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(b=>b.classList.remove('active'));
+            const target = document.getElementById(`${tab}-tab`);
+            if(target) target.classList.add('active');
+            if(tab==='monitor' && btns[0]) btns[0].classList.add('active');
+            if(tab==='control' && btns[1]) btns[1].classList.add('active');
+        }
 
         // Kết nối MQTT
         function connectMQTT() {
