@@ -765,10 +765,10 @@
             const avgR   = (typeof d.avg_r === 'number')   ? d.avg_r   : (cellRes.length ? (cellRes.reduce((a,b)=>a+b,0)/cellRes.length) : undefined);
             const deltaR = (typeof d.delta_r === 'number') ? d.delta_r : ((minR!=null && maxR!=null) ? (maxR - minR) : undefined);
 
-            document.getElementById('min-resistance').textContent   = (minR!=null)   ? minR.toFixed(1)   : '--';
-            document.getElementById('max-resistance').textContent   = (maxR!=null)   ? maxR.toFixed(1)   : '--';
-            document.getElementById('avg-resistance').textContent   = (avgR!=null)   ? avgR.toFixed(1)   : '--';
-            document.getElementById('delta-resistance').textContent = (deltaR!=null) ? deltaR.toFixed(1) : '--';
+            document.getElementById('min-resistance').textContent   = (minR!=null)   ? minR.toFixed(3)   : '--';
+            document.getElementById('max-resistance').textContent   = (maxR!=null)   ? maxR.toFixed(3)   : '--';
+            document.getElementById('avg-resistance').textContent   = (avgR!=null)   ? avgR.toFixed(3)   : '--';
+            document.getElementById('delta-resistance').textContent = (deltaR!=null) ? deltaR.toFixed(3) : '--';
         }
 
         // Cập nhật cell grid
