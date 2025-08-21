@@ -416,6 +416,7 @@
         <div class="main-content">
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="showTab('monitor')">Thông số pin</button>
+                <button class="tab-btn" onclick="showTab('settings')">Cài đặt</button>
                 <button class="tab-btn" onclick="showTab('control')">Điều khiển</button>
             </div>
             <div id="monitor-tab" class="tab-content active">
@@ -555,6 +556,87 @@
             </div>
             </div> <!-- end monitor-tab -->
 
+            <div id="settings-tab" class="tab-content">
+                <div class="grid">
+                    <div class="card">
+                        <h3>⚡ Điện áp</h3>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label>Ngưỡng cao áp cell (V)</label><div class="input-with-button"><input type="number" id="cell-overvoltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_overvoltage','cell-overvoltage')">OK</button></div></div>
+                            <div class="form-group"><label>Khôi phục cao áp (V)</label><div class="input-with-button"><input type="number" id="cell-overvoltage-recovery" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_overvoltage_recovery','cell-overvoltage-recovery')">OK</button></div></div>
+                            <div class="form-group"><label>Ngưỡng thấp áp cell (V)</label><div class="input-with-button"><input type="number" id="cell-undervoltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_undervoltage','cell-undervoltage')">OK</button></div></div>
+                            <div class="form-group"><label>Khôi phục thấp áp (V)</label><div class="input-with-button"><input type="number" id="cell-undervoltage-recovery" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_undervoltage_recovery','cell-undervoltage-recovery')">OK</button></div></div>
+                            <div class="form-group"><label>Ngưỡng cân bằng (V)</label><div class="input-with-button"><input type="number" id="balance-trigger-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('balance_trigger_voltage','balance-trigger-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp bắt đầu cân bằng (V)</label><div class="input-with-button"><input type="number" id="balance-start-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('balance_start_voltage','balance-start-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp khi pin 100% (V)</label><div class="input-with-button"><input type="number" id="cell-soc100-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_soc100_voltage','cell-soc100-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp khi pin 0% (V)</label><div class="input-with-button"><input type="number" id="cell-soc0-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_soc0_voltage','cell-soc0-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp yêu cầu sạc (V)</label><div class="input-with-button"><input type="number" id="cell-request-charge-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_request_charge_voltage','cell-request-charge-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp duy trì (V)</label><div class="input-with-button"><input type="number" id="cell-request-float-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('cell_request_float_voltage','cell-request-float-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp ngủ thông minh (V)</label><div class="input-with-button"><input type="number" id="smart-sleep-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('smart_sleep_voltage','smart-sleep-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Điện áp tắt nguồn (V)</label><div class="input-with-button"><input type="number" id="power-off-voltage" step="0.001"><button class="btn" onclick="saveSingleSetting('power_off_voltage','power-off-voltage')">OK</button></div></div>
+                            <div class="form-group"><label>Số lượng cell</label><div class="input-with-button"><input type="number" id="cell-count" step="1" min="2" max="32"><button class="btn" onclick="saveSingleSetting('cell_count','cell-count')">OK</button></div></div>
+                            <div class="form-group"><label>Tổng dung lượng (Ah)</label><div class="input-with-button"><input type="number" id="capacity" step="0.1"><button class="btn" onclick="saveSingleSetting('capacity','capacity')">OK</button></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⚡ Dòng điện</h3>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label>Dòng cân bằng tối đa (A)</label><div class="input-with-button"><input type="number" id="max-balance-current" step="0.1"><button class="btn" onclick="saveSingleSetting('max_balance_current','max-balance-current')">OK</button></div></div>
+                            <div class="form-group"><label>Dòng sạc tối đa (A)</label><div class="input-with-button"><input type="number" id="charge-current" step="0.1"><button class="btn" onclick="saveSingleSetting('charge_current','charge-current')">OK</button></div></div>
+                            <div class="form-group"><label>Dòng xả tối đa (A)</label><div class="input-with-button"><input type="number" id="discharge-current" step="0.1"><button class="btn" onclick="saveSingleSetting('discharge_current','discharge-current')">OK</button></div></div>
+                            <div class="form-group"><label>Hiệu chuẩn dòng điện</label><div class="input-with-button"><input type="number" id="current-calibration" step="0.001"><button class="btn" onclick="saveSingleSetting('current_calibration','current-calibration')">OK</button></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>⏱️ Thời gian & Độ trễ</h3>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label>Độ trễ quá dòng sạc (s)</label><div class="input-with-button"><input type="number" id="charge-ocp-delay-s" step="1"><button class="btn" onclick="saveSingleSetting('charge_ocp_delay_s','charge-ocp-delay-s')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian khôi phục quá dòng sạc (s)</label><div class="input-with-button"><input type="number" id="charge-ocpr-time-s" step="1"><button class="btn" onclick="saveSingleSetting('charge_ocpr_time_s','charge-ocpr-time-s')">OK</button></div></div>
+                            <div class="form-group"><label>Độ trễ quá dòng xả (s)</label><div class="input-with-button"><input type="number" id="discharge-ocp-delay-s" step="1"><button class="btn" onclick="saveSingleSetting('discharge_ocp_delay_s','discharge-ocp-delay-s')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian khôi phục quá dòng xả (s)</label><div class="input-with-button"><input type="number" id="discharge-ocpr-time-s" step="1"><button class="btn" onclick="saveSingleSetting('discharge_ocpr_time_s','discharge-ocpr-time-s')">OK</button></div></div>
+                            <div class="form-group"><label>Độ trễ ngắn mạch (μs)</label><div class="input-with-button"><input type="number" id="scp-delay-us" step="1"><button class="btn" onclick="saveSingleSetting('scp_delay_us','scp-delay-us')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian khôi phục ngắn mạch (s)</label><div class="input-with-button"><input type="number" id="scp-recovery-time-s" step="1"><button class="btn" onclick="saveSingleSetting('scp_recovery_time_s','scp-recovery-time-s')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian yêu cầu sạc (h)</label><div class="input-with-button"><input type="number" id="request-charge-voltage-time-h" step="0.1"><button class="btn" onclick="saveSingleSetting('request_charge_voltage_time_h','request-charge-voltage-time-h')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian điện áp duy trì (h)</label><div class="input-with-button"><input type="number" id="request-float-voltage-time-h" step="0.1"><button class="btn" onclick="saveSingleSetting('request_float_voltage_time_h','request-float-voltage-time-h')">OK</button></div></div>
+                            <div class="form-group"><label>Thời gian precharge xả (s)</label><div class="input-with-button"><input type="number" id="discharge-precharge-time-s" step="1"><button class="btn" onclick="saveSingleSetting('discharge_precharge_time_s','discharge-precharge-time-s')">OK</button></div></div>
+                            <div class="form-group"><label>Hiệu chuẩn điện áp</label><div class="input-with-button"><input type="number" id="voltage-calibration" step="0.01"><button class="btn" onclick="saveSingleSetting('voltage_calibration','voltage-calibration')">OK</button></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🌡️ Nhiệt độ</h3>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label>Nhiệt độ quá cao sạc (°C)</label><div class="input-with-button"><input type="number" id="charge-overtemp" step="0.1"><button class="btn" onclick="saveSingleSetting('charge_overtemp','charge-overtemp')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ khôi phục sạc (°C)</label><div class="input-with-button"><input type="number" id="charge-overtemp-recovery" step="0.1"><button class="btn" onclick="saveSingleSetting('charge_overtemp_recovery','charge-overtemp-recovery')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ quá cao xả (°C)</label><div class="input-with-button"><input type="number" id="discharge-overtemp" step="0.1"><button class="btn" onclick="saveSingleSetting('discharge_overtemp','discharge-overtemp')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ khôi phục xả (°C)</label><div class="input-with-button"><input type="number" id="discharge-overtemp-recovery" step="0.1"><button class="btn" onclick="saveSingleSetting('discharge_overtemp_recovery','discharge-overtemp-recovery')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ quá thấp sạc (°C)</label><div class="input-with-button"><input type="number" id="charge-undertemp" step="0.1"><button class="btn" onclick="saveSingleSetting('charge_undertemp','charge-undertemp')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ khôi phục sạc (°C)</label><div class="input-with-button"><input type="number" id="charge-undertemp-recovery" step="0.1"><button class="btn" onclick="saveSingleSetting('charge_undertemp_recovery','charge-undertemp-recovery')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ quá cao MOSFET (°C)</label><div class="input-with-button"><input type="number" id="mos-overtemp" step="0.1"><button class="btn" onclick="saveSingleSetting('mos_overtemp','mos-overtemp')">OK</button></div></div>
+                            <div class="form-group"><label>Nhiệt độ khôi phục MOSFET (°C)</label><div class="input-with-button"><input type="number" id="mos-overtemp-recovery" step="0.1"><button class="btn" onclick="saveSingleSetting('mos_overtemp_recovery','mos-overtemp-recovery')">OK</button></div></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>🎚️ Công tắc điều khiển</h3>
+                        <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label>MOSFET sạc</label><label class="switch"><input type="checkbox" id="charge-mosfet-on" onchange="saveSwitch('charge_mosfet_on','charge-mosfet-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>MOSFET xả</label><label class="switch"><input type="checkbox" id="discharge-mosfet-on" onchange="saveSwitch('discharge_mosfet_on','discharge-mosfet-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Bộ cân bằng</label><label class="switch"><input type="checkbox" id="balancer-on" onchange="saveSwitch('balancer_on','balancer-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Sưởi ấm</label><label class="switch"><input type="checkbox" id="heating-on" onchange="saveSwitch('heating_on','heating-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Tắt cảm biến nhiệt</label><label class="switch"><input type="checkbox" id="disable-temperature-sensors" onchange="saveSwitch('disable_temperature_sensors','disable-temperature-sensors')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Màn hình luôn sáng</label><label class="switch"><input type="checkbox" id="display-always-on" onchange="saveSwitch('display_always_on','display-always-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Ngủ thông minh</label><label class="switch"><input type="checkbox" id="smart-sleep-on" onchange="saveSwitch('smart_sleep_on','smart-sleep-on')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Tắt module PCL</label><label class="switch"><input type="checkbox" id="disable-pcl-module" onchange="saveSwitch('disable_pcl_module','disable-pcl-module')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Lưu dữ liệu theo thời gian</label><label class="switch"><input type="checkbox" id="timed-stored-data" onchange="saveSwitch('timed_stored_data','timed-stored-data')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Chế độ float sạc</label><label class="switch"><input type="checkbox" id="charging-float-mode" onchange="saveSwitch('charging_float_mode','charging-float-mode')"><span class="slider"></span></label></div>
+                            <div class="form-group"><label>Chế độ khẩn cấp</label><label class="switch"><input type="checkbox" id="emergency-mode" onchange="saveSwitch('emergency_mode','emergency-mode')"><span class="slider"></span></label></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="control-tab" class="tab-content">
                 <div class="grid">
                     <div class="card">
@@ -562,24 +644,6 @@
                         <div style="display:flex;gap:10px;flex-wrap:wrap;">
                             <button class="btn btn-danger" onclick="publishCommand(selectedDeviceId,'emergency_stop')">🛑 Dừng khẩn cấp</button>
                             <button class="btn btn-warning" onclick="publishCommand(selectedDeviceId,'restart')">🔄 Khởi động lại</button>
-                            <button class="btn btn-success" onclick="publishCommand(selectedDeviceId,'get_status')">📊 Lấy trạng thái</button>
-                            <button class="btn" onclick="publishCommand(selectedDeviceId,'get_data')">📈 Lấy dữ liệu</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <h3>⏱️ Tốc độ cập nhật</h3>
-                        <div style="display:flex;gap:10px;align-items:center;">
-                            <label>Chu kỳ:</label>
-                            <select id="refresh-select" onchange="setRefreshMs(this.value)">
-                                <option value="500">500 ms</option>
-                                <option value="1000">1000 ms</option>
-                                <option value="2000">2000 ms</option>
-                                <option value="3000" selected>3000 ms</option>
-                                <option value="5000">5000 ms</option>
-                            </select>
-                            <span id="refresh-label" style="color:#666"></span>
-                            <button class="btn" onclick="toggleAutoRefresh()">Bật/Tắt tự động</button>
-                            <button class="btn btn-primary" onclick="loadDataNow()">Làm mới</button>
                         </div>
                     </div>
                 </div>
@@ -635,7 +699,8 @@
             const target = document.getElementById(`${tab}-tab`);
             if(target) target.classList.add('active');
             if(tab==='monitor' && btns[0]) btns[0].classList.add('active');
-            if(tab==='control' && btns[1]) btns[1].classList.add('active');
+            if(tab==='settings' && btns[1]) btns[1].classList.add('active');
+            if(tab==='control' && btns[2]) btns[2].classList.add('active');
         }
 
         // Kết nối MQTT
@@ -685,6 +750,59 @@
                 updateConnectionStatus('disconnected', 'Lỗi kết nối MQTT');
                 showAlert('Lỗi kết nối MQTT: ' + error.message, 'error');
             }
+        }
+
+        // ===== MQTT command publishers for remote control =====
+        function ensureMqttConnected(){
+            if (!mqttClient || !mqttClient.connected){
+                showAlert('MQTT chưa kết nối', 'error');
+                return false;
+            }
+            if (!selectedDeviceId){
+                showAlert('Chưa chọn thiết bị', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // Publish a single setting { key: value } to bms/<id>/cmd/settings
+        function saveSingleSetting(settingKey, elementId){
+            const el = document.getElementById(elementId);
+            if (!el){ showAlert('Không tìm thấy input: '+elementId,'error'); return; }
+            const raw = el.value;
+            const value = Number(raw);
+            if (Number.isNaN(value)) { showAlert('Giá trị không hợp lệ!', 'error'); return; }
+            if (!ensureMqttConnected()) return;
+            const cmd = {}; cmd[settingKey] = value;
+            const topic = `bms/${selectedDeviceId}/cmd/settings`;
+            try{
+                mqttClient.publish(topic, JSON.stringify(cmd), { qos: 1 });
+                showAlert(`Đã gửi cài đặt ${settingKey}=${value}`,'success');
+            }catch(e){ showAlert('Lỗi gửi MQTT','error'); }
+        }
+
+        // Publish a switch toggle { key: boolean } to bms/<id>/cmd/switches
+        function saveSwitch(switchKey, elementId){
+            const el = document.getElementById(elementId);
+            if (!el){ showAlert('Không tìm thấy công tắc: '+elementId,'error'); return; }
+            const value = !!el.checked;
+            if (!ensureMqttConnected()) return;
+            const cmd = {}; cmd[switchKey] = value;
+            const topic = `bms/${selectedDeviceId}/cmd/switches`;
+            try{
+                mqttClient.publish(topic, JSON.stringify(cmd), { qos: 1 });
+                showAlert(`Đã gửi công tắc ${switchKey}=${value}`,'success');
+            }catch(e){ showAlert('Lỗi gửi MQTT','error'); }
+        }
+
+        // Publish simple action string to bms/<id>/cmd/action
+        function publishCommand(deviceId, action){
+            if (!ensureMqttConnected()) return;
+            const topic = `bms/${deviceId}/cmd/action`;
+            try{
+                mqttClient.publish(topic, action, { qos: 1 });
+                showAlert(`Đã gửi lệnh: ${action}`,'success');
+            }catch(e){ showAlert('Lỗi gửi MQTT','error'); }
         }
 
         // Subscribe vào các topics
