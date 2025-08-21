@@ -755,8 +755,20 @@
             const cellVoltages = Array.isArray(d.cv) ? d.cv.map(mv => mv / 1000) : (d.cell_voltages || []);
             updateCellGrid(cellVoltages, 'cell-grid', 'voltage');
             
-            // Lưới điện trở (nếu có)
-            updateCellGrid(d.cell_resistances || [], 'resistance-grid', 'resistance');
+            // Lưới điện trở (đọc cr nếu có; fallback cell_resistances)
+            const cellRes = Array.isArray(d.cr) ? d.cr : (d.cell_resistances || []);
+            updateCellGrid(cellRes, 'resistance-grid', 'resistance');
+
+            // Tổng hợp điện trở: ưu tiên min_r/max_r/avg_r/delta_r; nếu thiếu thì tính từ mảng
+            const minR   = (typeof d.min_r === 'number')   ? d.min_r   : (cellRes.length ? Math.min(...cellRes) : undefined);
+            const maxR   = (typeof d.max_r === 'number')   ? d.max_r   : (cellRes.length ? Math.max(...cellRes) : undefined);
+            const avgR   = (typeof d.avg_r === 'number')   ? d.avg_r   : (cellRes.length ? (cellRes.reduce((a,b)=>a+b,0)/cellRes.length) : undefined);
+            const deltaR = (typeof d.delta_r === 'number') ? d.delta_r : ((minR!=null && maxR!=null) ? (maxR - minR) : undefined);
+
+            document.getElementById('min-resistance').textContent   = (minR!=null)   ? minR.toFixed(1)   : '--';
+            document.getElementById('max-resistance').textContent   = (maxR!=null)   ? maxR.toFixed(1)   : '--';
+            document.getElementById('avg-resistance').textContent   = (avgR!=null)   ? avgR.toFixed(1)   : '--';
+            document.getElementById('delta-resistance').textContent = (deltaR!=null) ? deltaR.toFixed(1) : '--';
         }
 
         // Cập nhật cell grid
