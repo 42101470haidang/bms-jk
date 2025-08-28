@@ -1255,7 +1255,7 @@
             if (Number.isNaN(value)) { showAlert('Giá trị không hợp lệ!', 'error'); return; }
             if (!ensureMqttConnected()) return;
             const cmd = {}; cmd[settingKey] = value;
-            const topic = `bms/${selectedDeviceId}/cmd/settings`;
+            const topic = `bms/esp32_001/cmd/settings`;
             try{
                 mqttClient.publish(topic, JSON.stringify(cmd), { qos: 1 });
                 showAlert(`Đã gửi cài đặt ${settingKey}=${value}`,'success');
@@ -1269,7 +1269,7 @@
             const value = !!el.checked;
             if (!ensureMqttConnected()) return;
             const cmd = {}; cmd[switchKey] = value;
-            const topic = `bms/${selectedDeviceId}/cmd/switches`;
+            const topic = `bms/esp32_001/cmd/switches`;
             try{
                 mqttClient.publish(topic, JSON.stringify(cmd), { qos: 1 });
                 showAlert(`Đã gửi công tắc ${switchKey}=${value}`,'success');
@@ -1583,18 +1583,13 @@
         function scanActiveDevices() {
             console.log('Đang scan các thiết bị đang hoạt động...');
             
-            // Gửi lệnh scan tới tất cả thiết bị
+            // Gửi lệnh scan tới ESP32
             if (mqttClient && mqttClient.connected) {
-                devices.forEach((device, deviceId) => {
-                    if (device.status === 'online') {
-                        // Gửi lệnh yêu cầu trạng thái
-                        const topic = `bms/${deviceId}/cmd/action`;
-                        mqttClient.publish(topic, 'get_status', { qos: 1 });
-                        console.log(`Đã gửi lệnh scan tới ${deviceId}`);
-                    }
-                });
+                const topic = `bms/esp32_001/cmd/action`;
+                mqttClient.publish(topic, 'get_status', { qos: 1 });
+                console.log('Đã gửi lệnh scan tới ESP32');
                 
-                showAlert('Đã gửi lệnh scan tới tất cả thiết bị online', 'success');
+                showAlert('Đã gửi lệnh scan tới ESP32', 'success');
             } else {
                 showAlert('MQTT chưa kết nối, không thể scan thiết bị', 'error');
             }
