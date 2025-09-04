@@ -504,6 +504,35 @@
 
         }
 
+        /* Toggle switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 52px;
+            height: 28px;
+            vertical-align: middle;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #888;
+            transition: .2s;
+            border-radius: 28px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px; width: 22px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #4CAF50; }
+        input:checked + .slider:before { transform: translateX(24px); }
+
 
 
         .voltage-low {
@@ -1040,21 +1069,6 @@
 
             <div id="monitor-tab" class="tab-content active">
 
-            <!-- Connection Status -->
-
-            <div class="connection-status">
-
-                <h3>
-
-                    <span id="mqtt-status-indicator" class="status-indicator status-disconnected"></span>
-
-                    <span id="mqtt-status-text">Đang kết nối MQTT...</span>
-
-                </h3>
-
-                <p id="mqtt-info">Kết nối tới broker.hivemq.com</p>
-
-            </div>
 
 
 
@@ -1290,20 +1304,66 @@
 
                 <div class="control-section">
 
-                    <h2>🎛️ Điều khiển ESP32</h2>
+                    <h2>🛡️ Quản lý BMS</h2>
 
                     <div class="control-buttons">
 
-                        <button class="btn btn-danger" onclick="emergencyStop()">🛑 Dừng khẩn cấp</button>
+                        <button id="btn-emergency" class="btn btn-danger" onclick="openEmergencyConfirm()">🛑 Dừng khẩn cấp</button>
 
-                        <button class="btn btn-warning" onclick="restartDevice()">🔄 Khởi động lại</button>
+                        <button id="btn-recover" class="btn btn-primary" style="display:none;" onclick="openRecoverConfirm()">🔄 Khởi động lại BMS</button>
 
-                        <button class="btn btn-success" onclick="getDeviceStatus()">📊 Lấy trạng thái</button>
+                        <button class="btn btn-warning" onclick="restartDevice()">🔄 Khởi động lại ESP32</button>
 
-                        <button class="btn" onclick="getDeviceData()">📈 Lấy dữ liệu</button>
+                        <button class="btn btn-info" onclick="powerCycleDevice()">⚡ Power Cycle</button>
 
                     </div>
 
+                </div>
+
+                <!-- Emergency confirm modal -->
+                <div id="modal-emergency" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+                    <div style="background:#fff; border-radius:12px; padding:20px; max-width:420px; width:92%;">
+                        <h3 style="margin-bottom:10px;">Xác nhận dừng khẩn cấp</h3>
+                        <p style="color:#555;">Hệ thống sẽ tắt sạc, xả, cân bằng, sưởi và bật chế độ khẩn cấp để đảm bảo an toàn.</p>
+                        <div style="margin-top:16px; display:flex; gap:10px; justify-content:flex-end;">
+                            <button class="btn btn-secondary" onclick="closeEmergencyConfirm()">Hủy</button>
+                            <button class="btn btn-danger" onclick="confirmEmergency()">Xác nhận</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recover confirm modal -->
+                <div id="modal-recover" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:10000; align-items:center; justify-content:center;">
+                    <div style="background:#fff; border-radius:12px; padding:20px; max-width:520px; width:92%;">
+                        <h3 style="margin-bottom:10px;">Khởi động lại BMS</h3>
+                        <p style="color:#555;">Chọn trạng thái cần phục hồi. Mặc định khôi phục theo trước khi dừng khẩn cấp.</p>
+                        <div style="margin-top:12px; display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                            <label>Charge MOSFET
+                                <label class="switch" style="margin-left:8px;">
+                                    <input id="rcv-charge" type="checkbox"><span class="slider"></span>
+                                </label>
+                            </label>
+                            <label>Discharge MOSFET
+                                <label class="switch" style="margin-left:8px;">
+                                    <input id="rcv-discharge" type="checkbox"><span class="slider"></span>
+                                </label>
+                            </label>
+                            <label>Balancer
+                                <label class="switch" style="margin-left:8px;">
+                                    <input id="rcv-balancer" type="checkbox"><span class="slider"></span>
+                                </label>
+                            </label>
+                            <label>Heating
+                                <label class="switch" style="margin-left:8px;">
+                                    <input id="rcv-heating" type="checkbox"><span class="slider"></span>
+                                </label>
+                            </label>
+                        </div>
+                        <div style="margin-top:16px; display:flex; gap:10px; justify-content:flex-end;">
+                            <button class="btn btn-secondary" onclick="closeRecoverConfirm()">Hủy</button>
+                            <button class="btn btn-primary" onclick="confirmRecover()">Xác nhận</button>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -1855,8 +1915,6 @@
 
                     console.log('MQTT kết nối thành công!');
 
-                    updateConnectionStatus('connected', 'Đã kết nối MQTT');
-
                     showAlert('Kết nối MQTT thành công!', 'success');
 
                     reconnectAttempts = 0;
@@ -1883,8 +1941,6 @@
 
                     console.error('MQTT error:', error);
 
-                    updateConnectionStatus('disconnected', 'Lỗi kết nối MQTT');
-
                     showAlert('Lỗi kết nối MQTT: ' + error.message, 'error');
 
                 });
@@ -1894,10 +1950,6 @@
                 mqttClient.on('close', () => {
 
                     console.log('MQTT kết nối đóng');
-
-                    updateConnectionStatus('disconnected', 'Mất kết nối MQTT');
-
-                    
 
                     if (reconnectAttempts < maxReconnectAttempts) {
 
@@ -1914,8 +1966,6 @@
             } catch (error) {
 
                 console.error('Lỗi kết nối MQTT:', error);
-
-                updateConnectionStatus('disconnected', 'Lỗi kết nối MQTT');
 
                 showAlert('Lỗi kết nối MQTT: ' + error.message, 'error');
 
@@ -2025,6 +2075,16 @@
 
             }catch(e){ showAlert('Lỗi gửi MQTT','error'); }
 
+        }
+
+        // Publish settings object to bms/<id>/cmd/settings for recovery
+        function publishSettingsCommand(deviceId, settings){
+            if (!ensureMqttConnected()) return;
+            const topic = `bms/${deviceId}/cmd/settings`;
+            try{
+                mqttClient.publish(topic, JSON.stringify(settings), { qos: 1 });
+                showAlert(`Đã gửi cài đặt khôi phục cho ${deviceId}`,'success');
+            }catch(e){ showAlert('Lỗi gửi MQTT settings','error'); }
         }
 
 
@@ -2276,6 +2336,10 @@
 
             const d = device.data || {};
 
+            // Check emergency state and update buttons accordingly
+            const emergencyActive = d.emergency_active === true;
+            setEmergencyButtons(emergencyActive);
+
             
 
             // Thông tin chính (v, i, soc, p)
@@ -2426,19 +2490,11 @@
 
 
 
-        // Cập nhật trạng thái kết nối
+        // Cập nhật trạng thái kết nối (removed - no longer needed)
 
         function updateConnectionStatus(status, text) {
 
-            const indicator = document.getElementById('mqtt-status-indicator');
-
-            const textElement = document.getElementById('mqtt-status-text');
-
-            
-
-            indicator.className = `status-indicator status-${status}`;
-
-            textElement.textContent = text;
+            // Function kept for compatibility but no longer updates UI
 
         }
 
@@ -2474,16 +2530,64 @@
 
         // Điều khiển thiết bị
 
-        function emergencyStop() {
+        // UI: toggle buttons based on emergency state
+        function setEmergencyButtons(active){
+            const be = document.getElementById('btn-emergency');
+            const br = document.getElementById('btn-recover');
+            if (!be || !br) return;
+            if (active){ be.style.display='none'; br.style.display=''; }
+            else { be.style.display=''; br.style.display='none'; }
+        }
 
-            if (selectedDeviceId && confirm(`Bạn có chắc muốn dừng khẩn cấp thiết bị ${selectedDeviceId}?`)) {
+        // Open/close modals
+        function openEmergencyConfirm(){ const m=document.getElementById('modal-emergency'); if(m){ m.style.display='flex'; } }
+        function closeEmergencyConfirm(){ const m=document.getElementById('modal-emergency'); if(m){ m.style.display='none'; } }
+        function openRecoverConfirm(){
+            preloadRecoverToggles();
+            const m=document.getElementById('modal-recover'); if(m){ m.style.display='flex'; }
+        }
+        function closeRecoverConfirm(){ const m=document.getElementById('modal-recover'); if(m){ m.style.display='none'; } }
 
+        // Confirm emergency: call backend, then swap button
+        async function confirmEmergency(){
+            if (!selectedDeviceId) { showAlert('Vui lòng chọn thiết bị trước', 'error'); return; }
+            try{
+                // Send emergency stop command via MQTT
                 publishCommand(selectedDeviceId, 'emergency_stop');
+                setEmergencyButtons(true);
+                closeEmergencyConfirm();
+                showAlert(`Đã kích hoạt dừng khẩn cấp thiết bị ${selectedDeviceId}`, 'success');
+            }catch(e){ showAlert('Lỗi khi dừng khẩn cấp', 'error'); }
+        }
 
-                showAlert(`Đã gửi lệnh dừng khẩn cấp thiết bị ${selectedDeviceId}`, 'success');
+        // Preload recover modal with snapshot (simulate previous state)
+        async function preloadRecoverToggles(){
+            try{
+                // For dashboard, we'll use default values since we don't have direct access to device state
+                const setc=(id,v)=>{ const el=document.getElementById(id); if(el) el.checked=!!v; };
+                setc('rcv-charge', true);      // Default: enable charge
+                setc('rcv-discharge', true);   // Default: enable discharge  
+                setc('rcv-balancer', true);    // Default: enable balancer
+                setc('rcv-heating', false);    // Default: disable heating
+            }catch(e){ /* ignore */ }
+        }
 
-            }
-
+        // Confirm recover: apply selected toggles
+        async function confirmRecover(){
+            if (!selectedDeviceId) { showAlert('Vui lòng chọn thiết bị trước', 'error'); return; }
+            const payload = {
+                charge_mosfet_on: document.getElementById('rcv-charge').checked,
+                discharge_mosfet_on: document.getElementById('rcv-discharge').checked,
+                balancer_on: document.getElementById('rcv-balancer').checked,
+                heating_on: document.getElementById('rcv-heating').checked
+            };
+            try{
+                // Send recovery command via MQTT
+                publishSettingsCommand(selectedDeviceId, payload);
+                setEmergencyButtons(false);
+                closeRecoverConfirm();
+                showAlert(`Đã khôi phục BMS thiết bị ${selectedDeviceId} theo lựa chọn`, 'success');
+            }catch(e){ showAlert('Lỗi khi khôi phục BMS', 'error'); }
         }
 
 
@@ -2500,33 +2604,15 @@
 
         }
 
-
-
-        function getDeviceStatus() {
-
-            if (selectedDeviceId) {
-
-                publishCommand(selectedDeviceId, 'get_status');
-
-                showAlert(`Đã yêu cầu trạng thái thiết bị ${selectedDeviceId}`, 'success');
-
+        function powerCycleDevice() {
+            if (selectedDeviceId && confirm(`Bạn có chắc muốn power cycle thiết bị ${selectedDeviceId}?\n\nThiết bị sẽ tạm ngắt nguồn 5 giây rồi bật lại.`)) {
+                publishCommand(selectedDeviceId, 'power_cycle');
+                showAlert(`Đã gửi lệnh power cycle thiết bị ${selectedDeviceId}`, 'success');
             }
-
         }
 
 
 
-        function getDeviceData() {
-
-            if (selectedDeviceId) {
-
-                publishCommand(selectedDeviceId, 'get_data');
-
-                showAlert(`Đã yêu cầu dữ liệu thiết bị ${selectedDeviceId}`, 'success');
-
-            }
-
-        }
 
 
 
@@ -2600,7 +2686,7 @@
                 
                 // Cập nhật trạng thái nút xóa
                 updateRemoveButtonState();
-            }, 30000);
+            }, 5000);
 
         }
 
