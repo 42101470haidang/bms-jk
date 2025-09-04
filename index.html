@@ -1208,6 +1208,14 @@
 
                         <div class="unit">Dung lượng hiện tại (Ah)</div>
 
+                        <div class="value" id="total-capacity">--</div>
+
+                        <div class="unit">Dung lượng tối đa (Ah)</div>
+
+                        <div class="value" id="charge-cycles">--</div>
+
+                        <div class="unit">Chu kỳ sạc</div>
+
                     </div>
 
                 </div>
@@ -2416,6 +2424,11 @@
 
             document.getElementById('delta-resistance').textContent = (deltaR!=null) ? deltaR.toFixed(3) : '--';
 
+            // Dung lượng pin
+            document.getElementById('current-capacity').textContent = (d.cap_cur ?? '--') === '--' ? '--' : (+d.cap_cur).toFixed(2);
+            document.getElementById('total-capacity').textContent = (d.cap_tot ?? '--') === '--' ? '--' : (+d.cap_tot).toFixed(2);
+            document.getElementById('charge-cycles').textContent = d.cycles ?? '--';
+
         }
 
 
@@ -2522,7 +2535,7 @@
 
                 alert.remove();
 
-            }, 5000);
+            }, 1000);
 
         }
 
@@ -2686,7 +2699,7 @@
                 
                 // Cập nhật trạng thái nút xóa
                 updateRemoveButtonState();
-            }, 5000);
+            }, 1000);
 
         }
 
